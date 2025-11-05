@@ -8,14 +8,11 @@ import android.view.ViewGroup
 import ec.edu.uisek.githubclient.databinding.FragmentRepoItemBinding
 
 
-/**
- * A simple [Fragment] subclass.
- * Use the [RepoItem.newInstance] factory method to
- * create an instance of this fragment.
- */
 class RepoItem : Fragment() {
+
     private var _binding: FragmentRepoItemBinding? = null
     private val binding get() = _binding!!
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,17 +29,18 @@ class RepoItem : Fragment() {
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.repoName.text = "Mi repositorio "
-        binding.repoDescription.text = "te paso el huevo"
+        binding.repoName.text = "Mi repositorio"
+        binding.repoDescription.text = "Esta es la descripción del repositorio"
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-
     }
+
 
     companion object {
         /**
