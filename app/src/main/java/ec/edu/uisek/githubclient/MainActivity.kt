@@ -80,11 +80,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displayNewRepoForm() {
-
-        Intent(this, RepoForm::class.java).apply {
+        Intent(this, CreateRepoActivity::class.java).apply {
             startActivity(this)
         }
-
     }
 
 
