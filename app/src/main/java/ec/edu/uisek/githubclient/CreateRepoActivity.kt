@@ -5,11 +5,19 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import ec.edu.uisek.githubclient.models.Repo
+import ec.edu.uisek.githubclient.models.RepoRequest
+import ec.edu.uisek.githubclient.services.GithubApiService
+import ec.edu.uisek.githubclient.services.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class CreateRepoActivity : AppCompatActivity() {
+
+    private val apiService: GithubApiService by lazy {
+        RetrofitClient.gitHubApiService
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +32,6 @@ class CreateRepoActivity : AppCompatActivity() {
             val repoDescription = repoDescriptionEditText.text.toString()
 
             if (repoName.isNotEmpty()) {
-                // Call the function to create the repository using the GitHub API
                 createRepository(repoName, repoDescription)
             } else {
                 Toast.makeText(this, "Please enter a repository name", Toast.LENGTH_SHORT).show()
@@ -33,12 +40,20 @@ class CreateRepoActivity : AppCompatActivity() {
     }
 
     private fun createRepository(name: String, description: String) {
-        // Implement the logic to create the repository using the GitHub API (POST)
-        // You will need to use a library like Retrofit to make the API call
-        // Remember to handle the success and error cases
+        val repoRequest = RepoRequest(name, description)
+        apiService.addRepo(repoRequest).enqueue(object : Callback<Repo> {
+            override fun onResponse(call: Call<Repo>, response: Response<Repo>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(this@CreateRepoActivity, "Repository created successfully", Toast.LENGTH_SHORT).show()
+                    finish()
+                } else {
+                    Toast.makeText(this@CreateRepoActivity, "Failed to create repository", Toast.LENGTH_SHORT).show()
+                }
+            }
 
-        // For now, we will just show a toast message
-        Toast.makeText(this, "Repository created successfully (Not implemented yet)", Toast.LENGTH_SHORT).show()
-        finish()
+            override fun onFailure(call: Call<Repo>, t: Throwable) {
+                Toast.makeText(this@CreateRepoActivity, "Failed to create repository", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

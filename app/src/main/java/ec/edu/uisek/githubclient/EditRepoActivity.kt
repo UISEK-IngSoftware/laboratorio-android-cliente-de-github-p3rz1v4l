@@ -5,6 +5,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import ec.edu.uisek.githubclient.models.Repo
+import ec.edu.uisek.githubclient.models.RepoRequest
+import ec.edu.uisek.githubclient.services.GithubApiService
+import ec.edu.uisek.githubclient.services.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class EditRepoActivity : AppCompatActivity() {
 
@@ -12,6 +19,10 @@ class EditRepoActivity : AppCompatActivity() {
     private lateinit var repoDescriptionEditText: EditText
     private lateinit var updateRepoButton: Button
     private lateinit var repoName: String
+
+    private val apiService: GithubApiService by lazy {
+        RetrofitClient.gitHubApiService
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +43,6 @@ class EditRepoActivity : AppCompatActivity() {
             val newRepoDescription = repoDescriptionEditText.text.toString()
 
             if (newRepoName.isNotEmpty()) {
-                // Call the function to update the repository using the GitHub API
                 updateRepository(repoName, newRepoName, newRepoDescription)
             } else {
                 Toast.makeText(this, "Please enter a repository name", Toast.LENGTH_SHORT).show()
@@ -40,13 +50,21 @@ class EditRepoActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateRepository(oldName: String, newName: String, description: String) {
-        // Implement the logic to update the repository using the GitHub API (PATCH or PUT)
-        // You will need to use a library like Retrofit to make the API call
-        // Remember to handle the success and error cases
+    private fun updateRepository(owner: String, repo: String, description: String) {
+        val repoRequest = RepoRequest(repo, description)
+        apiService.updateRepo(owner, repo, repoRequest).enqueue(object : Callback<Repo> {
+            override fun onResponse(call: Call<Repo>, response: Response<Repo>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(this@EditRepoActivity, "Repository updated successfully", Toast.LENGTH_SHORT).show()
+                    finish()
+                } else {
+                    Toast.makeText(this@EditRepoActivity, "Failed to update repository", Toast.LENGTH_SHORT).show()
+                }
+            }
 
-        // For now, we will just show a toast message
-        Toast.makeText(this, "Repository updated successfully (Not implemented yet)", Toast.LENGTH_SHORT).show()
-        finish()
+            override fun onFailure(call: Call<Repo>, t: Throwable) {
+                Toast.makeText(this@EditRepoActivity, "Failed to update repository", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }
