@@ -7,79 +7,77 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlin.getValue
-
 
 /**
- * Objeto singleton que configura y proporciona la instancia de Retrofit
- * para conectarse a la API de GitHub
+ * Objeto singleton que configura y proporciona una instancia de Retrofit para conectarse a la API de GitHub.
+ * Al ser un singleton, se asegura de que solo exista una instancia de Retrofit en toda la app.
  */
 object RetrofitClient {
 
     private const val TAG = "RetrofitClient"
-
-    // URL base de la API de GitHub
-    private const val BASE_URL = "https://api.github.com/"
+    private const val BASE_URL = "https://api.github.com/" // URL base para todas las llamadas a la API.
 
     /**
-     * Interceptor que agrega el token de autenticación a todas las peticiones
+     * Interceptor que añade automáticamente el token de autenticación a todas las peticiones.
+     * Esto centraliza la lógica de autenticación y evita repetirla en cada llamada.
      */
     private val authInterceptor = Interceptor { chain ->
         val originalRequest = chain.request()
-        val token = BuildConfig.GITHUB_API_TOKEN
+        val token = BuildConfig.GITHUB_API_TOKEN // Token de acceso personal de GitHub.
 
-        // Si el token está configurado, agregarlo al header Authorization
+        // Construye una nueva petición añadiendo los encabezados necesarios.
         val newRequest = if (token.isNotEmpty()) {
             originalRequest.newBuilder()
-                .addHeader("Authorization", "Bearer $token")
-                .addHeader("Accept", "application/vnd.github.v3+json")
+                .addHeader("Authorization", "Bearer $token") // Añade el token para autorización.
+                .addHeader("Accept", "application/vnd.github.v3+json") // Especifica la versión de la API.
                 .build()
         } else {
-            // Sin token, solo agregar el header Accept
-            Log.w(TAG, "⚠️ Token de GitHub NO configurado")
+            Log.w(TAG, "⚠️ Token de GitHub NO configurado. Las peticiones pueden fallar.")
             originalRequest.newBuilder()
                 .addHeader("Accept", "application/vnd.github.v3+json")
                 .build()
         }
 
+        // Procede con la petición modificada.
         chain.proceed(newRequest)
     }
 
     /**
-     * Interceptor de logging para ver las peticiones y respuestas en el log
-     * Solo activo en modo DEBUG con nivel BASIC (resumen de peticiones)
+     * Interceptor para registrar en Logcat los detalles de las peticiones y respuestas de red.
+     * Es muy útil para depurar problemas de API. Solo se activa en builds de depuración.
      */
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor.Level.BASIC
+            HttpLoggingInterceptor.Level.BODY // En DEBUG, muestra todos los detalles (headers, body).
         } else {
-            HttpLoggingInterceptor.Level.NONE
+            HttpLoggingInterceptor.Level.NONE // En RELEASE, no muestra logs.
         }
     }
 
     /**
-     * Cliente HTTP configurado con los interceptors necesarios
+     * Cliente HTTP (OkHttpClient) configurado con nuestros interceptores.
+     * Este cliente será usado por Retrofit para realizar todas las peticiones de red.
      */
     private val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(authInterceptor)
-        .addInterceptor(loggingInterceptor)
+        .addInterceptor(authInterceptor)      // Añade el interceptor de autenticación.
+        .addInterceptor(loggingInterceptor) // Añade el interceptor de logging.
         .build()
 
     /**
-     * Instancia de Retrofit configurada con la URL base, el cliente HTTP
-     * y el convertidor Gson para serializar/deserializar JSON
+     * Instancia de Retrofit configurada de forma "lazy" (diferida).
+     * Se crea solo la primera vez que se necesita.
      */
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient) // Usa nuestro cliente HTTP personalizado.
+            .addConverterFactory(GsonConverterFactory.create()) // Convierte JSON a objetos Kotlin.
             .build()
     }
 
     /**
-     * Instancia del servicio de la API de GitHub
-     * Se crea de forma lazy (solo cuando se necesita por primera vez)
+     * Implementación concreta de nuestra interfaz [GithubApiService].
+     * Retrofit crea automáticamente el código necesario para hacer las llamadas a la API.
      */
     val gitHubApiService: GithubApiService by lazy {
         retrofit.create(GithubApiService::class.java)

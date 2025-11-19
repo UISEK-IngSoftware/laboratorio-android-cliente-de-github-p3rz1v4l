@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">Github Client</string>
-    <string name="test_text">Este es un texto de prueba</string>
-    <string name="repo_name">Nombre del repositorio</string>
-    <string name="repo_description">Descripción del repositorio</string>
-    <string name="repo_lang">Lenguaje</string>
-    <string name="text_lang">Kotlin</string>
-    <string name="cancel">Cancelar</string>
-    <string name="save">Guardar</string>
+    <string name="repo_name">Name</string>
+    <string name="repo_description">Description</string>
+    <string name="repo_language">Language</string>
+    <string name="test_text">test text</string>
+    <string name="text_lang">test lang</string>
+    <string name="title_activity_repo_form">RepoForm</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 </resources>
