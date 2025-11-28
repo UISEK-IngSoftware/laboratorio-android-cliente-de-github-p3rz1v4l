@@ -21,7 +21,7 @@ class CreateRepoActivity : AppCompatActivity() {
      * Se inicializa de forma diferida (lazy) la primera vez que se accede a ella.
      */
     private val githubApiService: GithubApiService by lazy {
-        RetrofitClient.gitHubApiService
+        RetrofitClient.getApiService()
     }
 
     /**

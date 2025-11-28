@@ -7,5 +7,11 @@
     <string name="text_lang">test lang</string>
     <string name="title_activity_repo_form">RepoForm</string>
     <string name="save">Save</string>
+    <!-- Strings para pantalla de login -->
     <string name="cancel">Cancel</string>
+    <string name="user">Usuario</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+
+
 </resources>

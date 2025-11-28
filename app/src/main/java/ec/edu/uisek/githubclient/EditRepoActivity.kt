@@ -20,7 +20,7 @@ class EditRepoActivity : AppCompatActivity() {
      * Instancia del servicio de la API de GitHub, obtenida del cliente Retrofit centralizado.
      */
     private val githubApiService: GithubApiService by lazy {
-        RetrofitClient.gitHubApiService
+        RetrofitClient.getApiService()
     }
 
     /**

@@ -16,7 +16,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-
+/*
 // Configurar la variable de entorno desde .env
         val envFile = rootProject.file(".env")
         val githubToken = if (envFile.exists()) {
@@ -30,7 +30,10 @@ android {
         }
 
         buildConfigField("String", "GITHUB_API_TOKEN", "\"$githubToken\"")
+
+ */
         }
+
 
     buildTypes {
         release {
@@ -75,5 +78,7 @@ dependencies {
         implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     // Glide para cargar imágenes desde URLs
         implementation("com.github.bumptech.glide:glide:4.16.0")
+
+        implementation("androidx.security:security-crypto:1.1.0-alpha06")
 }
 
